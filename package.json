@@ -1,6 +1,6 @@
 {
   "name": "ip-spot",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "returns basic ip address information",
   "main": "index.js",
   "scripts": {

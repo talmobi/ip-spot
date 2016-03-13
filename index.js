@@ -9,8 +9,6 @@ var extend = require('extend');
 var dns = require('dns');
 var URL = require('url');
 
-var request = require('request');
-
 var jade = require('jade');
 var locals = {
   title: 'ip-spot.com - your public ip',
