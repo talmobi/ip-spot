@@ -23,5 +23,9 @@
   "bugs": {
     "url": "https://github.com/talmobi/ip-spot/issues"
   },
-  "homepage": "https://github.com/talmobi/ip-spot#readme"
+  "homepage": "https://github.com/talmobi/ip-spot#readme",
+  "dependencies": {
+    "express": "^4.13.4",
+    "ipaddr.js": "^1.1.0"
+  }
 }
