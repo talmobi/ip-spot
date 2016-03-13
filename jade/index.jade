@@ -2,11 +2,24 @@ doctype html
 html(lang="en")
   head
     title #{title}
+    link(href='http://fonts.googleapis.com/css?family=Roboto+Condensed:700,300,400', type='text/css' rel='stylesheet')
+    link(href='/css/main.css', rel='stylesheet')
 
   body
-    h1 #{title}
-    
-    h2 Your public ip is: #{ip}
-    ul
-      for data in recent_ips
-        li #{data.ip}
+    h1 ip-spot.com - find ip's!
+
+    div.your-ip 
+      span.text Your public ip is:
+      span.your-ip-address #{ip}
+
+    form#form
+      input#search.search
+      input#submit(type='submit')
+
+    div.recent-lookups
+      for data in recent_lookups
+        div.lookup
+          span.hostname #{data.hostname}
+          span.address #{data.addresses[0].address}
+
+    script(src="/js/app.js")

@@ -1,0 +1,78 @@
+html, body {
+  margin: 0;
+  padding: 0;
+
+  color: #eee;
+  background: #222;
+
+  font-family: 'Roboto Condensed', Helvetica;
+
+  width: 475px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+* {
+  width: 475px;
+  margin: 0px;
+  padding: 0px;
+}
+
+.your-ip {
+  position: relative;
+  font-size: 1.5em;
+  padding: 1em 0px;
+  height: 1em;
+}
+
+.search {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #eee;
+  color: #eee;
+  font-size: 24px;
+  padding: 10px;
+  width: 455px;
+}
+
+#submit {
+  display: none;
+}
+
+input:focus, select:focus, textarea:focus, button:focus {
+  outline: none;
+}
+
+.text {
+  position: absolute;
+  display: inline;
+}
+
+.your-ip-address {
+  position: absolute;
+  display: inline;
+  text-align: right;
+}
+
+.recent-lookups {
+  padding-top: 40px;
+}
+
+.lookup {
+  position: relative;
+  padding: .5em 0px;
+  border-bottom: 1px solid #eee;
+  height: 1em;
+}
+
+.hostname {
+  display: inline;
+  position: absolute;
+  text-align: left;
+}
+
+.address {
+  position: absolute;
+  display: inline;
+  text-align: right;
+}
