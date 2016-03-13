@@ -1,9 +1,9 @@
-## ip-spot
+# ip-spot
 
-#About
+##About
 Simple user and site ip lookup web app.
 
-#Install
+##Install
 from source
 ```
 git clone https://github.com/talmobi/ip-spot
@@ -11,7 +11,7 @@ cd ip-spot
 npm install
 ```
 
-#Run
+##Run
 ```
 node index.js // localhost:3060
 ```
