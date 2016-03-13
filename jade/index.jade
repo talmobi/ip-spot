@@ -1,0 +1,12 @@
+doctype html
+html(lang="en")
+  head
+    title #{title}
+
+  body
+    h1 #{title}
+    
+    h2 Your public ip is: #{ip}
+    ul
+      for data in recent_ips
+        li #{data.ip}
