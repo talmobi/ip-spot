@@ -1,0 +1,27 @@
+{
+  "name": "ip-spot",
+  "version": "0.0.0",
+  "description": "returns basic ip address information",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/talmobi/ip-spot.git"
+  },
+  "keywords": [
+    "ip",
+    "info",
+    "what",
+    "is",
+    "my",
+    "ip"
+  ],
+  "author": "talmobi <talmo.christian@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/talmobi/ip-spot/issues"
+  },
+  "homepage": "https://github.com/talmobi/ip-spot#readme"
+}
