@@ -9,9 +9,69 @@ var extend = require('extend');
 var dns = require('dns');
 var URL = require('url');
 
+// used to parse for ip lookup to iplocation.net
+var request = require('request');
+var cheerio = require('cheerio');
+
 var jade = require('jade');
 var locals = {
   title: 'ip-spot.com - your public ip',
+};
+
+function iplocationLookup (hostname, done) {
+  var url = "https://www.iplocation.net";
+  var formData = {
+    query: hostname,
+    submit: "IP Lookup"
+  };
+
+  request({
+    method: 'POST',
+    url: url,
+    formData: formData
+  }, function (error, response, body) {
+    if (error) {
+      return done(error);
+    }
+
+    var $ = cheerio.load(body);
+    var tds = $("tbody tr td");
+
+    var spans = $('span');
+    var text = spans.text();
+
+    var results = /(\d+\.{1}\d+\.{1}\d+\.{1}\d+)/.exec( text );
+    var ip = results[0] || results[1];
+
+    var data = {
+      ip: ip,
+      hostname: $(tds[0]).text(),
+      country: $(tds[1]).text(),
+      region: $(tds[2]).text(),
+      city: $(tds[3]).text()
+    };
+
+    return done(null, data);
+  });
+};
+
+function dnsLookup (hostname, done) {
+  dns.lookup(hostname, { all: true }, function (err, addresses) {
+    if (err) {
+      return done(err);
+    };
+
+    var data = {
+      hostname: hostname,
+      ip: addresses[0],
+      addresses: addresses,
+      country: "unknown",
+      region: "unknown",
+      city: "unknown"
+    };
+
+    return done(null, data);
+  });
 };
 
 app.use('/css', express.static(__dirname + '/css'));
@@ -42,19 +102,15 @@ MongoClient.connect(url, function (err, db) {
       console.log("saved ip [%s] to mongodb", ip);
     });
 
-    db.collection('dns-lookups').find().sort({_id: -1}).limit(10).toArray(function (err, docs) {
+    db.collection('ip-data').find().sort({_id: -1}).limit(10).toArray(function (err, docs) {
       if (err) {
         res.status(500).json(err).end();
         return console.error(err);
       }
 
-      var filter = docs.filter(function (val, ind, arr) {
-        return val && val.addresses && val.addresses[0];
-      });
-
       var data = {
-        ip: ip,
-        recent_lookups: filter
+        ip: ip, // your ip
+        recent_lookups: docs
       };
 
       var html = jade.renderFile('./jade/index.jade', extend(locals, data));
@@ -64,7 +120,7 @@ MongoClient.connect(url, function (err, db) {
 
   });
 
-  app.get('/:url', function (req, res) {
+  app.get('/api/:url', function (req, res) {
     var collection = db.collection('dns-lookups');
 
     console.log("url: %s", req.params.url);
@@ -76,26 +132,27 @@ MongoClient.connect(url, function (err, db) {
     var hostname = URL.parse( url ).hostname;
     console.log("hostname: %s", hostname);
 
-    dns.lookup(hostname, { all: true }, function (err, addresses) {
+    iplocationLookup (hostname, function (err, data) {
       if (err) {
         res.status(500).json(err).end();
         return console.error(err);
       };
 
-      var doc = {
-        hostname: hostname,
-        addresses: addresses
-      };
+      var doc = data;
 
       res.json(doc).end();
 
-      collection.insert(doc, function (err, result) {
+      db.collection('ip-data').insert(doc, function (err, result) {
         if (err) {
           return console.error(err);
         }
-        console.log("saved dns-lookup [%s] to mongodb", doc.hostname);
+        console.log("saved ip-data [%s] to mongodb", doc.hostname);
       });
     });
+
+    /*
+    */
+
   });
 });
 

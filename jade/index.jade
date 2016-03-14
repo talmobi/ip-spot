@@ -6,10 +6,12 @@ html(lang="en")
     link(href='/css/main.css', rel='stylesheet')
 
   body
-    h1 ip-spot.com - find ip's!
+    div.head
+      div.title ip-spot.com
+      div.desc lookup site IP's
 
     div.your-ip 
-      span.text Your public ip is:
+      span.text Your IP address is
       span.your-ip-address #{ip}
 
     form#form
@@ -17,9 +19,12 @@ html(lang="en")
       input#submit(type='submit')
 
     div.recent-lookups
+      Recent lookups
       for data in recent_lookups
         div.lookup
           span.hostname #{data.hostname}
-          span.address #{data.addresses[0].address}
+          span.address
+            span.recent-ip #{data.ip}
+            span.recent-meta [#{data.country}]
 
     script(src="/js/app.js")

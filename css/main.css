@@ -23,6 +23,25 @@ html, body {
   font-size: 1.5em;
   padding: 1em 0px;
   height: 1em;
+  padding-top: 2em;
+}
+
+.head {
+  position: relative;
+}
+
+.title {
+  position: absolute;
+  text-align: left;
+}
+
+.recent-meta {
+  padding-left: 10px;
+}
+
+.desc {
+  position: absolute;
+  text-align: right;
 }
 
 .search {

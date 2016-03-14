@@ -19,7 +19,7 @@ submitEl.onsubmit = function (e) {
   }
 
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', '/' + hostname, true);
+  xhr.open('GET', '/api/' + hostname, true);
   xhr.onload = function () {
     if (xhr.status >= 200 && xhr.status < 400) {
       // success
