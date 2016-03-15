@@ -3,6 +3,19 @@ console.log("app js loaded");
 var inputEl = document.getElementById('search');
 var submitEl = document.getElementById('form');
 
+var placeholderText = "Site lookup - start typing";
+inputEl.value = placeholderText;
+inputEl.addEventListener('blur', function () {
+  var val = inputEl.value;
+  if (!val) {
+    inputEl.value = placeholderText;
+  }
+});
+inputEl.addEventListener('focus', function () {
+  inputEl.value = "";
+});
+
+
 function handleError () {
   //inputEl.value = "";
 };
@@ -35,4 +48,11 @@ submitEl.onsubmit = function (e) {
   xhr.send();
 };
 
-inputEl.focus();
+// focus input on any keypress
+window.onkeypress = function (e) {
+  if (e.which !== 0 && !inputEl.activeElement) {
+    inputEl.focus();
+  }
+};
+
+//inputEl.focus();

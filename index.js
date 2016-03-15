@@ -62,7 +62,6 @@ function dnsLookup (hostname, done) {
     };
 
     var data = {
-      hostname: hostname,
       ip: addresses[0].address,
       addresses: addresses
     };
@@ -73,6 +72,7 @@ function dnsLookup (hostname, done) {
 
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/js', express.static(__dirname + '/js'));
+app.use('/assets', express.static(__dirname + '/assets'));
 
 var url = "mongodb://localhost:27017/ip-spot";
 MongoClient.connect(url, function (err, db) {
