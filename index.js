@@ -63,11 +63,8 @@ function dnsLookup (hostname, done) {
 
     var data = {
       hostname: hostname,
-      ip: addresses[0],
-      addresses: addresses,
-      country: "unknown",
-      region: "unknown",
-      city: "unknown"
+      ip: addresses[0].address,
+      addresses: addresses
     };
 
     return done(null, data);
@@ -138,20 +135,37 @@ MongoClient.connect(url, function (err, db) {
         return console.error(err);
       };
 
-      var doc = data;
+      var doc = Object.assign({}, data);
 
-      res.json(doc).end();
+      var finish = function (doc) {
+        res.json(doc).end();
 
-      db.collection('ip-data').insert(doc, function (err, result) {
-        if (err) {
-          return console.error(err);
-        }
-        console.log("saved ip-data [%s] to mongodb", doc.hostname);
-      });
+        db.collection('ip-data').insert(doc, function (err, result) {
+          if (err) {
+            return console.error(err);
+          }
+          console.log("saved ip-data [%s] to mongodb", doc.hostname);
+        });
+      };
+
+      doc.ip = null;
+      if (!doc.ip || typeof doc.ip !== 'string' || doc.ip.length < 5) {
+        console.log("using dns lookup as backup");
+        // grab ip from dns lookup
+        dnsLookup(hostname, function (err, data) {
+          if (err) {
+            res.status(500).json(err).end();
+            return console.error(err);
+          }
+          Object.assign(doc, data);
+          console.log(doc);
+          finish(doc);
+        });
+      } else {
+        console.log("used only iplocationLookup");
+        finish(doc);
+      }
     });
-
-    /*
-    */
 
   });
 });
