@@ -2,7 +2,8 @@ var http = require('http');
 var express = require('express');
 var app = express();
 
-var MongoClient = require('mongodb').MongoClient;
+var r = require('rethinkdb');
+
 var assert = require('assert');
 var extend = require('extend');
 
@@ -74,13 +75,20 @@ app.use('/css', express.static(__dirname + '/css'));
 app.use('/js', express.static(__dirname + '/js'));
 app.use('/assets', express.static(__dirname + '/assets'));
 
-var url = "mongodb://localhost:27017/ip-spot";
-MongoClient.connect(url, function (err, db) {
-  assert.equal(null, err);
-  console.log("Connected to mongodb server");
+var connection = null;
+r.connect({host: 'localhost', port: 28015 }, function (err, conn) {
+  if (err) throw err;
+  connection = conn;
+  console.log("connected to rethinkdb");
+
+  // create table, ignore error if it already exists
+  r.tableCreate('ip_spot').run(connection, function (err, result) {
+    if (err) {
+      // ignore, probably because the table already exists...
+    }
+  });
 
   app.get('/', function (req, res) {
-    var collection = db.collection('ips');
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
     ip = ip.split(/,*\s+/)[0];
@@ -88,37 +96,34 @@ MongoClient.connect(url, function (err, db) {
     console.log(ip);
 
     var doc = {
+      type: 'pageview',
+      created_at: Date.now(),
       ip: ip,
       remoteAddress: req.connection.remoteAddress,
       'x-forwarded-for': req.headers['x-forwarded-for']
     };
-    collection.insert(doc, function (err, result) {
-      if (err) {
-        return console.error(err);
-      }
-      console.log("saved ip [%s] to mongodb", ip);
+
+    r.table('ip_spot').insert( doc ).run(connection, function (err, result) {
+      if (err) throw err;
+      console.log("saved ip [%s] to rethinkdb", ip);
+    })
+
+    r.table('ip_spot').filter({type: 'search'}).orderBy(r.desc('created_at')).limit(10).run(connection, function (err, cursor) {
+      if (err) throw err;
+      cursor.toArray(function (err, docs) {
+        if (err) throw err;
+
+        var data = {
+          ip: ip, // your ip
+          recent_lookups: docs
+        };
+        var html = jade.renderFile('./jade/index.jade', extend(locals, data));
+        return res.send(html).end();
+      });
     });
-
-    db.collection('ip-data').find().sort({_id: -1}).limit(10).toArray(function (err, docs) {
-      if (err) {
-        res.status(500).json(err).end();
-        return console.error(err);
-      }
-
-      var data = {
-        ip: ip, // your ip
-        recent_lookups: docs
-      };
-
-      var html = jade.renderFile('./jade/index.jade', extend(locals, data));
-
-      return res.send(html).end();
-    });
-
   });
 
   app.get('/api/:url', function (req, res) {
-    var collection = db.collection('dns-lookups');
 
     console.log("url: %s", req.params.url);
     var url = req.params.url;
@@ -136,15 +141,15 @@ MongoClient.connect(url, function (err, db) {
       };
 
       var doc = Object.assign({}, data);
+      doc.type = "search";
+      doc.created_at = Date.now();
 
       var finish = function (doc) {
         res.json(doc).end();
 
-        db.collection('ip-data').insert(doc, function (err, result) {
-          if (err) {
-            return console.error(err);
-          }
-          console.log("saved ip-data [%s] to mongodb", doc.hostname);
+        r.table('ip_spot').insert(doc).run(connection, function (err, result) {
+          if (err) throw err;
+          console.log("saved ip-data [%s] to rethinkdb", doc.hostname);
         });
       };
 
@@ -166,8 +171,8 @@ MongoClient.connect(url, function (err, db) {
         finish(doc);
       }
     });
-
   });
+
 });
 
 var port = 3060;

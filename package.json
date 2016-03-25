@@ -30,6 +30,7 @@
     "extend": "^3.0.0",
     "jade": "^1.11.0",
     "mongodb": "^2.1.7",
-    "request": "^2.69.0"
+    "request": "^2.69.0",
+    "rethinkdb": "^2.2.2"
   }
 }
