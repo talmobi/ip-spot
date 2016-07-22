@@ -23,7 +23,8 @@ app.use(function (req, res) {
 
   var ipstr = ipaddr_.toString()
   console.log('[%s] hit by [%s]', ipaddr_.kind(), ipstr)
-  res.send( ipstr )
+  res.write( ipstr )
+  res.end()
 })
 
 var port = 3060;
