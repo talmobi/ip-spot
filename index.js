@@ -17,7 +17,7 @@ app.use(function (req, res) {
   var ip = req.headers['x-forwarded-for'] || req.ip || req.connection.remoteAddress
   var ipaddr_ = ipaddr.parse(ip)
 
-  if (ipaddr_.isIPv4MappedAddress()) {
+  if (ipaddr_.isIPv4MappedAddress && ipaddr_.isIPv4MappedAddress()) {
     ipaddr_ = ipaddr_.toIPv4Address()
   }
 
