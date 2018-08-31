@@ -2,6 +2,10 @@ var http = require('http');
 var express = require('express');
 var app = express();
 
+var cors = require('cors');
+
+var port = 16900;
+
 var RateLimit = require('express-rate-limit')
 var ipaddr = require('ipaddr.js') // manipulate ipv4 and ipv6 addresses
 
@@ -10,6 +14,8 @@ var limiter = RateLimit({
   max: 100,
   delayMs: 0
 })
+
+app.use( cors() )
 
 app.use(limiter)
 
@@ -27,7 +33,6 @@ app.use(function (req, res) {
   res.end()
 })
 
-var port = 3060;
 
 var server = http.createServer(app);
 server.listen(port);
