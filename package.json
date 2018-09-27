@@ -25,9 +25,9 @@
   },
   "homepage": "https://github.com/talmobi/ip-spot#readme",
   "dependencies": {
-    "cors": "^2.8.4",
-    "express": "^4.14.0",
-    "express-rate-limit": "^2.4.0",
-    "ipaddr.js": "^1.2.0"
+    "cors": "~2.8.4",
+    "express": "~4.16.3",
+    "express-rate-limit": "~2.4.0",
+    "ipaddr.js": "~1.8.1"
   }
 }
