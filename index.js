@@ -22,7 +22,7 @@ var limiter = RateLimit({
 
 app.use( cors() )
 
-app.use(limiter)
+app.use( limiter )
 
 // TODO test
 app.get( '/version', function ( req, res ) {
@@ -34,8 +34,17 @@ app.get( '/mtime', function ( req, res ) {
 } )
 
 app.use(function (req, res) {
-  var ip = req.headers['x-forwarded-for'] || req.ip || req.connection.remoteAddress
-  var ipaddr_ = ipaddr.parse(ip)
+  var ip = (
+    req.headers[ 'cf-connecting-ip' ] ||
+    req.headers[ 'x-forwarded-for' ] ||
+    req.ip ||
+    req.connection.remoteAddress
+  )
+  var ipaddr_ = ipaddr.parse( ip )
+
+  console.log( ( new Date() ).toLocaleString() )
+  console.log( req.headers )
+  console.log( '=================' )
 
   if (ipaddr_.isIPv4MappedAddress && ipaddr_.isIPv4MappedAddress()) {
     ipaddr_ = ipaddr_.toIPv4Address()
